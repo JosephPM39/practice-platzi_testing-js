@@ -9,9 +9,12 @@ const fakeBooks = [
   },
 ];
 
+// Spy
+const mockGetAll = jest.fn();
+
 // Stub
 const MongoLibStub = {
-  getAll: () => [...fakeBooks],
+  getAll: mockGetAll,
   create: () => {},
 };
 
@@ -21,7 +24,13 @@ jest.mock(
   '../lib/mongo.lib',
   // Impersonate it with MongoLibStub
   () => jest.fn().mockImplementation(
-    () => MongoLibStub,
+    // Jest prepare the spies in a folder called mocks, so
+    // if we want use the spy here, is necesary remplace
+    // the mongoLibStub, directly obj here
+    () => ({
+      getAll: mockGetAll,
+      create: () => {},
+    }),
   ),
 );
 
@@ -37,11 +46,18 @@ describe('Test for BooksService', () => {
 
   describe('Test for getBooks', () => {
     test('Should return a list book', async () => {
+      // Arrange
+      // Using spy
+      mockGetAll.mockResolvedValue(fakeBooks);
       // Act
       const books = await service.getBooks({});
       console.log(books);
       // Assert
       expect(books.length).toEqual(1);
+      // Using spy results
+      expect(mockGetAll).toHaveBeenCalled();
+      expect(mockGetAll).toHaveBeenCalledTimes(1);
+      expect(mockGetAll).toHaveBeenCalledWith('books', {});
     });
 
     test('Should return a list book', async () => {
