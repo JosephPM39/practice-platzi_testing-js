@@ -1,4 +1,5 @@
 const BooksService = require('./books.service');
+const { generateManyBooks } = require('../fakes/book.fake');
 
 // Fake
 const fakeBooks = [
@@ -46,14 +47,15 @@ describe('Test for BooksService', () => {
 
   describe('Test for getBooks', () => {
     test('Should return a list book', async () => {
-      // Arrange
+      // Arrange with fakers books
+      const fakeBook = generateManyBooks(20);
       // Using spy
-      mockGetAll.mockResolvedValue(fakeBooks);
+      mockGetAll.mockResolvedValue(fakeBook);
       // Act
       const books = await service.getBooks({});
       console.log(books);
       // Assert
-      expect(books.length).toEqual(1);
+      expect(books.length).toEqual(fakeBook.length);
       // Using spy results
       expect(mockGetAll).toHaveBeenCalled();
       expect(mockGetAll).toHaveBeenCalledTimes(1);
@@ -61,11 +63,15 @@ describe('Test for BooksService', () => {
     });
 
     test('Should return a list book', async () => {
+      // Arrange with fakers books
+      const fakeBook = generateManyBooks(2);
+      // Using spy
+      mockGetAll.mockResolvedValue(fakeBook);
       // Act
       const books = await service.getBooks({});
       console.log(books);
       // Assert
-      expect(books[0].name).toEqual('Harry Potter');
+      expect(books[0].name).toEqual(fakeBook[0].name);
     });
   });
 });
