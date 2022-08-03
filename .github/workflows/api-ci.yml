@@ -1,0 +1,33 @@
+name: API CI
+#For normal repository
+#on: [push]
+#For monorepo (multiple projects in same repo)
+on:
+  push:
+    paths:
+      - "./api/**"
+      - ".github/workflows/api-ci.yml"
+defaults:
+  run:
+    working-directory: ./api
+#End for monorepo
+
+jobs:
+  unit-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup Nodejs
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14
+          cache: 'npm'
+          #for monorepo
+          cache-dependency-path: ./api/package-lock.json
+      - name: Install
+        shell: bash
+        run: npm ci
+      - name: Run Unit Tests
+        shell: bash
+        run: npm run test
